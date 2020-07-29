@@ -10,4 +10,3 @@ Working with the following novels:
   
 Known issues:
   - Last entry of tab # is also the first entry of tab (# + 1)
-  - Current tests show the editor can't handle games that utilize saves from previous books (i.e. Werewolves 2)
