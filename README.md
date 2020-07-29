@@ -11,6 +11,3 @@ Working with the following novels:
 Known issues:
   - Last entry of tab # is also the first entry of tab (# + 1)
   - Current tests show the editor can't handle games that utilize saves from previous books (i.e. Werewolves 2)
-  - Have to close the editor and reopen if you need to open a different save file (i.e. opening multiple within the same editor instance)
-  - Saving multiple times leads to concatenated changes from each modification instance (i.e. settings.xml gets bigger and bigger after saving multiple times in the same editor instance)
-  
