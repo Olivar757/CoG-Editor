@@ -8,7 +8,7 @@ root.geometry('1250x600')
 
 root.iconbitmap(getcwd() + r"\Assets\cog_logo.ico")
 
-global mysave, others, strings, begin, states, Lines  # test
+global mysave, others, strings, begin, states, Lines
 
 
 def initialize():
