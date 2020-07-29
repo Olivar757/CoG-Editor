@@ -144,7 +144,7 @@ def initialize():
     mysave.close()
 
 
-def getEntries():
+def getEntries():  # gets a list of the labels and (possibly) modified entries
     entries = []
     for x in tabControl.children.values():
         for y in reversed(x.grid_slaves()):
@@ -155,7 +155,7 @@ def getEntries():
     return entries
 
 
-def rejoin(e):
+def rejoin(e):  # takes in the list of entries and rejoins the entries and labels into what it originally looked like in the settings.xml file
     for x in range(len(e) // 2):
         if e[x + 1] == "false" or e[x + 1] == "true" or e[x + 1].isdigit():
             e[x] = "&quot;" + e[x] + "&quot;:" + e[x + 1] + ","
@@ -170,10 +170,13 @@ def save():
 
     e = getEntries()
     rejoin(e)
-    for l in Lines:
+
+    for l in Lines:  # finds which line is the current state of the novel (i.e. not the temp or backup states)
         if "PSstate\">" in l:
             ind = Lines.index(l)
+
     scenename = Lines[ind][Lines[ind].index(",&quot;sceneName"):]
+    # print(scenename)
     changed = begin + "".join(e)[:-1] + scenename
 
     f = filedialog.asksaveasfile(filetypes=(("XML File", "*.xml"), ("All Files", "*.*")), mode="w+")
