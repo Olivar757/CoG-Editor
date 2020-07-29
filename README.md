@@ -7,6 +7,3 @@ If you find any bugs or something doesn't work, email me at COGeditor20@gmail.co
 Working with the following novels:
   - Silverworld
   - Werewolves: Haven Rising
-  
-Known issues:
-  - Last entry of tab # is also the first entry of tab (# + 1)
