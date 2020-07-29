@@ -1,3 +1,4 @@
+from math import ceil
 from os import getcwd
 from tkinter import *
 from tkinter import filedialog, ttk
@@ -8,21 +9,42 @@ root.geometry('1250x600')
 
 root.iconbitmap(getcwd() + r"\Assets\cog_logo.ico")
 
-global mysave, others, strings, begin, states, Lines
+global mySave, others, strings, begin, states, Lines
+
+
+def populate(tab, iteration, lim, values):
+    r, c = 0, 0
+    for x, y in values.items():
+        if iteration == lim:
+            tab += 1
+            lim += 125
+        var = Label(tabControl.winfo_children()[tab], text=x.capitalize().replace("_", " ")).grid(row=r, column=c,
+                                                                                                  sticky=W)
+        dat = Entry(tabControl.winfo_children()[tab], width=15)
+        dat.insert(0, y)
+        dat.grid(row=r, column=c + 1)
+        if r % 24 == 0 and r > 0:
+            c += 2
+            r = 0
+        else:
+            r += 1
+        iteration += 1
+    tabControl.pack(fill=BOTH, expand=1)
 
 
 def initialize():
-    global mysave, others, strings, begin, states, Lines
+    global mySave, others, strings, begin, states, Lines
 
-    for x in tabControl.children.values():  # this makes sure that entries and labels from opened saves are not retained =
+    for x in tabControl.winfo_children():  # this makes sure that entries, labels, and tabs from opened saves are not retained
         if len(x.grid_slaves()) > 0:
             for y in x.grid_slaves():
                 y.destroy()
+        x.destroy()
 
-    mysave = filedialog.askopenfile(initialdir=getcwd(), title="Select a save",
+    mySave = filedialog.askopenfile(initialdir=getcwd(), title="Select a save",
                                     filetypes=(("Save File", "*.xml"), ("All files", "*.*")))
 
-    if mysave is None:  # if opening a file is cancelled, removes tabs that were used previously, if any exist
+    if mySave is None:  # if opening a file is cancelled, removes tabs that were used previously, if any exist
         for x in tabControl.tabs():
             tabControl.hide(x)
         return
@@ -32,7 +54,7 @@ def initialize():
         except TclError:
             pass
 
-    Lines = mysave.readlines()
+    Lines = mySave.readlines()
     others = []
     strings = []
     states = []
@@ -62,89 +84,13 @@ def initialize():
         if ":" in el:
             values[el[:el.index(":")]] = el[el.index(":") + 1:]
 
-    entry = 0
-    r = 0
-    c = 0
-    for x, y in values.items():
-        if entry < 125 and entry < len(values) + 2:
-            var = Label(tab1, text=x.capitalize().replace("_", " ")).grid(row=r, column=c, sticky=W)
-            dat = Entry(tab1, width=15)
-            dat.insert(0, y)
-            dat.grid(row=r, column=c + 1)
-            if r % 24 == 0 and r > 0:
-                c += 2
-                r = 0
-            else:
-                r += 1
-            entry += 1
-        if 124 < entry < 250 and entry < len(values) + 2:
-            var = Label(tab2, text=x.capitalize().replace("_", " ")).grid(row=r, column=c, sticky=W)
-            dat = Entry(tab2, width=15)
-            dat.insert(0, y)
-            dat.grid(row=r, column=c + 1)
-            if r % 24 == 0 and r > 0:
-                c += 2
-                r = 0
-            else:
-                r += 1
-            entry += 1
-        if 249 < entry < 375 and entry < len(values) + 2:
-            var = Label(tab3, text=x.capitalize().replace("_", " ")).grid(row=r, column=c, sticky=W)
-            dat = Entry(tab3, width=15)
-            dat.insert(0, y)
-            dat.grid(row=r, column=c + 1)
-            if r % 24 == 0 and r > 0:
-                c += 2
-                r = 0
-            else:
-                r += 1
-            entry += 1
-        if 374 < entry < 500 and entry < len(values) + 2:
-            var = Label(tab4, text=x.capitalize().replace("_", " ")).grid(row=r, column=c, sticky=W)
-            dat = Entry(tab4, width=15)
-            dat.insert(0, y)
-            dat.grid(row=r, column=c + 1)
-            if r % 24 == 0 and r > 0:
-                c += 2
-                r = 0
-            else:
-                r += 1
-            entry += 1
+    for t in range(ceil(len(values) / 125)):
+        tab = ttk.Frame(tabControl)
+        t += 1
+        tabControl.add(tab, text="Tab %d" % t)
 
-    if len(tab1.grid_slaves()) > 0:
-        tabControl.add(tab1, text="Tab 1")
-        tabControl.pack(fill='both', expand=1)
-    else:
-        try:  # these try and except clauses hide tabs that were previously displayed if they have no grid slaves
-            tabControl.hide(tab1)
-        except TclError:
-            pass
-    if len(tab2.grid_slaves()) > 0:
-        tabControl.add(tab2, text="Tab 2")
-        tabControl.pack(fill='both', expand=1)
-    else:
-        try:
-            tabControl.hide(tab2)
-        except TclError:
-            pass
-    if len(tab3.grid_slaves()) > 0:
-        tabControl.add(tab3, text="Tab 3")
-        tabControl.pack(fill='both', expand=1)
-    else:
-        try:
-            tabControl.hide(tab3)
-        except TclError:
-            pass
-    if len(tab4.grid_slaves()) > 0:
-        tabControl.add(tab4, text="Tab 4")
-        tabControl.pack(fill='both', expand=1)
-    else:
-        try:
-            tabControl.hide(tab4)
-        except TclError:
-            pass
-
-    mysave.close()
+    populate(0, 0, 125, values)
+    mySave.close()
 
 
 def getEntries():  # gets a list of the labels and (possibly) modified entries
@@ -154,6 +100,9 @@ def getEntries():  # gets a list of the labels and (possibly) modified entries
             if type(y) == Entry:
                 entries.append(y.get())
             else:
+                if y.cget(key='text') == "Scenename":
+                    entries.append("sceneName")
+                    continue
                 entries.append(y.cget(key="text").lower().replace(" ", "_"))
     return entries
 
@@ -172,14 +121,15 @@ def save():
     global others, strings, begin, Lines
 
     e = getEntries()
+    print(type(e))
+    print(e)
     rejoin(e)
 
     for l in Lines:  # finds which line is the current state of the novel (i.e. not the temp or backup states)
         if "PSstate\">" in l:
             ind = Lines.index(l)
 
-    scenename = Lines[ind][Lines[ind].index(",&quot;sceneName"):]
-    # print(scenename)
+    scenename = Lines[ind][Lines[ind].index(",&quot;temps&quot;"):]
     changed = begin + "".join(e)[:-1] + scenename
 
     f = filedialog.asksaveasfile(filetypes=(("XML File", "*.xml"), ("All Files", "*.*")), mode="w+")
@@ -205,12 +155,5 @@ frame.pack(padx=10)
 frame2 = Frame(root)
 frame2.pack(fill="both", expand=True)
 tabControl = ttk.Notebook(frame2)
-
-# create necessary tabs
-tab1 = ttk.Frame(tabControl)
-tab2 = ttk.Frame(tabControl)
-tab3 = ttk.Frame(tabControl)
-tab4 = ttk.Frame(tabControl)
-tab5 = ttk.Frame(tabControl)
 
 root.mainloop()
