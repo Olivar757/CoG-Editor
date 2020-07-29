@@ -1,6 +1,6 @@
-from tkinter import filedialog, ttk
-from tkinter import *
 from os import getcwd
+from tkinter import *
+from tkinter import filedialog, ttk
 
 root = Tk()
 root.title('CoG Save Editor')
@@ -30,7 +30,7 @@ def initialize():
         try:
             tabControl.select(tab_id=".!frame2.!notebook.!frame")  # selects the first tab to be displayed after opening a file
         except TclError:
-            None
+            pass
 
     Lines = mysave.readlines()
     others = []
@@ -48,9 +48,12 @@ def initialize():
         if "PSstate\"" in line:
             novel = line[20:]
             novel = novel[:novel.index("PSstate")]
-            root.title("CoG Save Editor - " + novel.capitalize())  # sets the title of the window to whatever the title of the book is
-            begin = line[line.index("{&quot;"):line.index("stats&quot;:{") + len("stats&quot;:{")]  # standard xml line before stat variables appear
-            valuesStr = line[line.index("{", line.index("{") + 1) + 1:line.index("sceneName")].replace("&quot;", "\"")  # gets the values of the stats up until "sceneName"
+            root.title(
+                "CoG Save Editor - " + novel.capitalize())  # sets the title of the window to whatever the title of the book is
+            begin = line[line.index("{&quot;"):line.index("stats&quot;:{") + len(
+                "stats&quot;:{")]  # standard xml line before stat variables appear
+            valuesStr = line[line.index("{", line.index("{") + 1) + 1:line.index("</string>")].replace("&quot;",
+                                                                                                       "\"")  # gets the values of the stats
 
     valuesList = valuesStr.split(",")
     values = {}
@@ -115,7 +118,7 @@ def initialize():
         try:  # these try and except clauses hide tabs that were previously displayed if they have no grid slaves
             tabControl.hide(tab1)
         except TclError:
-            None
+            pass
     if len(tab2.grid_slaves()) > 0:
         tabControl.add(tab2, text="Tab 2")
         tabControl.pack(fill='both', expand=1)
@@ -123,7 +126,7 @@ def initialize():
         try:
             tabControl.hide(tab2)
         except TclError:
-            None
+            pass
     if len(tab3.grid_slaves()) > 0:
         tabControl.add(tab3, text="Tab 3")
         tabControl.pack(fill='both', expand=1)
@@ -131,7 +134,7 @@ def initialize():
         try:
             tabControl.hide(tab3)
         except TclError:
-            None
+            pass
     if len(tab4.grid_slaves()) > 0:
         tabControl.add(tab4, text="Tab 4")
         tabControl.pack(fill='both', expand=1)
@@ -139,7 +142,7 @@ def initialize():
         try:
             tabControl.hide(tab4)
         except TclError:
-            None
+            pass
 
     mysave.close()
 
@@ -200,7 +203,7 @@ frame.pack(padx=10)
 
 # Creating tabControl
 frame2 = Frame(root)
-frame2.pack(fill="both")
+frame2.pack(fill="both", expand=True)
 tabControl = ttk.Notebook(frame2)
 
 # create necessary tabs
